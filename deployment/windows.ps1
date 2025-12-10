@@ -9,7 +9,15 @@ $ErrorActionPreference = 'Stop'
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RootDir = Resolve-Path "$ScriptDir\.."
 $ServeMode = $false
-$ServerPort = if ($env:PORT) { [int]$env:PORT } else { 4000 }
+$ServerPort = if ($env:PORT) { [int]$env:PORT } else { 0 }
+if (-not $ServerPort -and (Test-Path "$RootDir/.env")) {
+    $envLine = Get-Content "$RootDir/.env" | Where-Object { $_ -match '^PORT=' } | Select-Object -Last 1
+    if ($envLine) {
+        $ServerPort = [int]($envLine -replace '^PORT=','')
+    }
+}
+if (-not $ServerPort) { $ServerPort = 4000 }
+$ClientApiBase = "http://localhost:$ServerPort"
 
 if ($PSBoundParameters.ContainsKey('Serve')) {
     $ServeMode = $true
@@ -60,7 +68,10 @@ if ($ServeMode) {
     Kill-Port -Port 5175
 
     Write-Host '[setup] starting server and client preview...'
+    $env:PORT = $ServerPort
     $global:ServerProcess = Start-Process -NoNewWindow -FilePath 'npm' -ArgumentList 'run', 'start' -WorkingDirectory "$RootDir\server" -PassThru
+
+    $env:VITE_API_BASE = $ClientApiBase
     $global:ClientProcess = Start-Process -NoNewWindow -FilePath 'npm' -ArgumentList 'run', 'preview', '--', '--host', '0.0.0.0', '--port', '5173' -WorkingDirectory "$RootDir\client" -PassThru
     Write-Host "[setup] server pid: $($global:ServerProcess.Id), client pid: $($global:ClientProcess.Id)"
 
@@ -69,6 +80,8 @@ if ($ServeMode) {
         Wait-Process -Id $global:ServerProcess.Id, $global:ClientProcess.Id
     } finally {
         Write-Host '[setup] stopping...'
+        Remove-Item Env:PORT -ErrorAction SilentlyContinue
+        Remove-Item Env:VITE_API_BASE -ErrorAction SilentlyContinue
         if ($global:ServerProcess) { Stop-Process -Id $global:ServerProcess.Id -Force -ErrorAction SilentlyContinue }
         if ($global:ClientProcess) { Stop-Process -Id $global:ClientProcess.Id -Force -ErrorAction SilentlyContinue }
     }

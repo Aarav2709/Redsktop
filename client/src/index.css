@@ -7,45 +7,42 @@
 }
 
 body {
-  @apply bg-base text-neon antialiased;
+  @apply bg-base text-neon antialiased selection:bg-accent/30 selection:text-accent;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 /* Minimalist Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-base;
+  @apply bg-transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-border rounded-full;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-secondary;
+  @apply bg-border rounded-full hover:bg-secondary/50 transition-colors;
 }
 
 /* Utility Classes */
 .btn {
-  @apply px-3 py-1.5 rounded text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50;
+  @apply px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50 disabled:pointer-events-none;
 }
 
 .btn-primary {
-  @apply bg-accent text-white hover:bg-accent-hover;
+  @apply bg-accent text-white hover:bg-accent-hover shadow-lg shadow-accent/20;
 }
 
 .btn-ghost {
-  @apply text-secondary hover:text-neon hover:bg-border/50;
+  @apply text-secondary hover:text-neon hover:bg-surface;
 }
 
 .card {
-  @apply bg-panel border border-border rounded sm:rounded-md overflow-hidden;
+  @apply bg-panel border border-border rounded-lg overflow-hidden transition-all duration-200;
 }
 
 .input {
-  @apply bg-base border border-border rounded px-3 py-1.5 text-neon placeholder-secondary focus:border-accent focus:outline-none transition-colors;
+  @apply bg-surface border border-border rounded-md px-3 py-2 text-neon placeholder-secondary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all;
 }
+

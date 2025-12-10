@@ -3,7 +3,13 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SERVE="${1:-}"
-SERVER_PORT="${PORT:-4000}"
+SERVER_PORT="${PORT:-}"
+if [[ -z "${SERVER_PORT}" && -f "${ROOT_DIR}/.env" ]]; then
+  ENV_PORT=$(grep -E '^PORT=' "${ROOT_DIR}/.env" | tail -n1 | cut -d'=' -f2)
+  SERVER_PORT="${ENV_PORT:-}"
+fi
+SERVER_PORT="${SERVER_PORT:-4000}"
+CLIENT_API_BASE="http://localhost:${SERVER_PORT}"
 CLIENT_PORT=5173
 
 kill_port() {
@@ -40,10 +46,16 @@ if [[ "${SERVE}" == "--serve" ]]; then
   kill_port $((CLIENT_PORT + 2))
 
   echo "[setup] starting server and client preview..."
-  (cd "${ROOT_DIR}/server" && npm run start & echo $! > "${ROOT_DIR}/deployment/.server.pid")
-  (cd "${ROOT_DIR}/client" && npm run preview -- --host 0.0.0.0 --port 5173 & echo $! > "${ROOT_DIR}/deployment/.client.pid")
-  SERVER_PID=$(cat "${ROOT_DIR}/deployment/.server.pid")
-  CLIENT_PID=$(cat "${ROOT_DIR}/deployment/.client.pid")
+  pushd "${ROOT_DIR}/server" >/dev/null
+  PORT="${SERVER_PORT}" npm run start &
+  SERVER_PID=$!
+  popd >/dev/null
+
+  pushd "${ROOT_DIR}/client" >/dev/null
+  VITE_API_BASE="${CLIENT_API_BASE}" npm run preview -- --host 0.0.0.0 --port 5173 &
+  CLIENT_PID=$!
+  popd >/dev/null
+
   echo "[setup] server pid: ${SERVER_PID}, client pid: ${CLIENT_PID}"
   trap 'echo "[setup] stopping..."; kill ${SERVER_PID} ${CLIENT_PID} 2>/dev/null || true' EXIT INT TERM
   echo "[setup] running. Press Ctrl+C to stop."

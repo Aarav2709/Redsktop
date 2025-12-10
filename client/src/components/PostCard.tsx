@@ -58,61 +58,75 @@ const PostCard = ({ post, onOpen }: Props) => {
 
   return (
     <article
-      className="card hover:border-secondary/50 transition-colors cursor-pointer p-3 sm:p-4"
+      className="card hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5 transition-all duration-300 cursor-pointer p-4 group bg-panel"
       onClick={onOpen}
       role="button"
       tabIndex={0}
     >
       <div className="flex gap-4">
+        {/* Vote Column (Desktop) */}
+        <div className="hidden sm:flex flex-col items-center gap-1 pt-1">
+           <button
+              className={`p-1 rounded hover:bg-surface hover:text-accent transition-colors ${vote === "up" ? "text-accent" : "text-secondary"}`}
+              onClick={(e) => handleVote("up", e)}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+            </button>
+            <span className={`text-xs font-bold ${vote ? "text-accent" : "text-neon"}`}>
+              {score > 1000 ? (score / 1000).toFixed(1) + 'k' : score}
+            </span>
+            <button
+              className={`p-1 rounded hover:bg-surface hover:text-indigo-400 transition-colors ${vote === "down" ? "text-indigo-400" : "text-secondary"}`}
+              onClick={(e) => handleVote("down", e)}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+        </div>
+
         {hasThumb && (
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 pt-1">
             <img
               src={post.thumbnail}
               alt="thumb"
-              className="w-20 h-20 object-cover rounded bg-base border border-border"
+              className="w-24 h-24 object-cover rounded-md bg-surface border border-border group-hover:border-accent/30 transition-colors"
             />
           </div>
         )}
 
         <div className="flex-1 min-w-0">
-          <h3 className="text-base sm:text-lg font-medium text-neon leading-snug mb-1.5">
+          <div className="flex items-center gap-2 text-xs text-secondary mb-2">
+            <span className="font-bold text-neon hover:underline decoration-accent/50 underline-offset-2">r/subreddit</span>
+            <span>•</span>
+            <span className="hover:text-secondary/80">u/{post.author}</span>
+            {status && <span className="text-accent font-medium animate-pulse">• {status}</span>}
+          </div>
+
+          <h3 className="text-lg font-semibold text-neon leading-snug mb-3 group-hover:text-white transition-colors">
             {post.title}
           </h3>
 
-          <div className="flex items-center gap-2 text-xs text-secondary mb-3">
-            <span className="font-bold hover:text-neon">r/subreddit</span>
-            <span>•</span>
-            <span>u/{post.author}</span>
-            {status && <span className="text-accent">• {status}</span>}
-          </div>
-
           <div className="flex items-center gap-4 text-xs font-medium text-secondary">
-            <div className="flex items-center gap-1 bg-base/50 rounded px-1.5 py-0.5 border border-border/50">
+            {/* Mobile Vote (Horizontal) */}
+            <div className="flex sm:hidden items-center gap-1 bg-surface rounded-full px-2 py-1 border border-border">
               <button
-                className={`hover:text-accent p-1 transition-colors ${vote === "up" ? "text-accent" : ""}`}
+                className={`hover:text-accent p-0.5 ${vote === "up" ? "text-accent" : ""}`}
                 onClick={(e) => handleVote("up", e)}
-                aria-label="Upvote"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="18 15 12 9 6 15"></polyline>
-                </svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
               </button>
               <span className={`min-w-[2ch] text-center ${vote ? "text-accent" : ""}`}>
                 {score > 1000 ? (score / 1000).toFixed(1) + 'k' : score}
               </span>
               <button
-                className={`hover:text-blue-500 p-1 transition-colors ${vote === "down" ? "text-blue-500" : ""}`}
+                className={`hover:text-indigo-400 p-0.5 ${vote === "down" ? "text-indigo-400" : ""}`}
                 onClick={(e) => handleVote("down", e)}
-                aria-label="Downvote"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
               </button>
             </div>
 
             <button
-              className="flex items-center gap-1.5 hover:bg-base/50 px-2 py-1 rounded transition-colors hover:text-neon"
+              className="flex items-center gap-1.5 hover:bg-surface px-2 py-1 rounded transition-colors hover:text-neon"
               onClick={(e) => { e.stopPropagation(); onOpen(); }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -122,7 +136,7 @@ const PostCard = ({ post, onOpen }: Props) => {
             </button>
 
             <button
-              className="flex items-center gap-1.5 hover:bg-base/50 px-2 py-1 rounded transition-colors hidden sm:flex hover:text-neon"
+              className="flex items-center gap-1.5 hover:bg-surface px-2 py-1 rounded transition-colors hidden sm:flex hover:text-neon"
               onClick={handleShare}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -136,11 +150,11 @@ const PostCard = ({ post, onOpen }: Props) => {
             </button>
 
             <button
-              className="flex items-center gap-1.5 hover:bg-base/50 px-2 py-1 rounded transition-colors hidden sm:flex hover:text-neon"
+              className="flex items-center gap-1.5 hover:bg-surface px-2 py-1 rounded transition-colors hidden sm:flex hover:text-neon"
               onClick={handleSave}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
               </svg>
               <span>Save</span>
             </button>

@@ -4,13 +4,16 @@ module.exports = {
     extend: {
       colors: {
         // Minimalist Dark Theme Palette
-        base: "#0f0f0f",       // Main background (very dark gray, almost black)
-        panel: "#161618",      // Card/Header background (slightly lighter)
-        border: "#2a2a2c",     // Subtle borders
-        neon: "#e0e0e0",       // Primary text (soft white)
-        secondary: "#888888",  // Secondary text (muted gray)
-        accent: "#ff5700",     // Brand accent (classic orange, but used sparingly)
-        "accent-hover": "#ff6b1f",
+        base: "#0a0a0a",       // Main background (deeper black)
+        panel: "#121212",      // Card/Header background
+        surface: "#1e1e1e",    // Hover states / Inputs
+        border: "#2e2e2e",     // Subtle borders
+        neon: "#ededed",       // Primary text (brighter white)
+        secondary: "#a1a1aa",  // Secondary text (cool gray)
+        accent: "#ff4500",     // Brand accent (vibrant orange)
+        "accent-hover": "#ff5722",
+        success: "#10b981",    // Emerald 500
+        danger: "#ef4444",     // Red 500
       },
       fontFamily: {
         sans: [
