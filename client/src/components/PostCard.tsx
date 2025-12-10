@@ -95,7 +95,7 @@ const PostCard = ({ post, onOpen }: Props) => {
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 text-xs text-secondary mb-2">
-            <span className="font-bold text-neon hover:underline decoration-accent/50 underline-offset-2">r/subreddit</span>
+            <span className="font-bold text-neon hover:underline decoration-accent/50 underline-offset-2">r/{post.subreddit || "subreddit"}</span>
             <span>•</span>
             <span className="hover:text-secondary/80">u/{post.author}</span>
             {status && <span className="text-accent font-medium animate-pulse">• {status}</span>}

@@ -12,6 +12,7 @@ interface PostData {
   selftext: string;
   author: string;
   score: number;
+  subreddit?: string;
   url?: string;
   thumbnail?: string;
   permalink?: string;
@@ -25,10 +26,17 @@ interface CommentData {
   replies?: { data: { children: ListingChild<CommentData>[] } } | string;
 }
 
+type CommentVote = "up" | "down" | null;
+
 const renderComments = (
   nodes: ListingChild<CommentData>[],
   depth = 0,
-  handlers?: { onReply: (id: string) => void; onShare: (id: string) => void }
+  handlers?: {
+    onReply: (id: string) => void;
+    onShare: (id: string) => void;
+    onVote: (id: string, direction: CommentVote) => void;
+    votes: Record<string, { score: number; vote: CommentVote }>;
+  }
 ) =>
   nodes
     .filter((n) => n?.data?.body)
@@ -37,23 +45,46 @@ const renderComments = (
         node.data.replies && typeof node.data.replies !== "string"
           ? node.data.replies.data.children
           : [];
+
+      const voteState = handlers?.votes?.[node.data.id];
+      const score = voteState?.score ?? node.data.score;
+      const vote = voteState?.vote ?? null;
+
       return (
         <div
           key={node.data.id}
           id={`comment-${node.data.id}`}
           className={`mt-3 ${depth > 0 ? "ml-3 sm:ml-5 pl-3 border-l-2 border-border hover:border-secondary/50 transition-colors" : ""}`}
         >
-          <div className="py-1 group">
+          <div className="py-2 px-2 rounded hover:bg-surface/40 transition-colors group">
             <div className="flex items-center gap-2 text-xs text-secondary mb-1">
               <span className="font-bold text-neon">{node.data.author || "anon"}</span>
               <span>•</span>
-              <span>{node.data.score} points</span>
+              <span>{score} points</span>
             </div>
             <div className="text-sm leading-relaxed text-neon whitespace-pre-wrap break-words">{node.data.body}</div>
 
-            <div className="flex gap-3 mt-1.5 text-xs text-secondary font-medium opacity-50 group-hover:opacity-100 transition-opacity">
-               <button className="hover:text-neon" onClick={() => handlers?.onReply(node.data.id)}>Reply</button>
-               <button className="hover:text-neon" onClick={() => handlers?.onShare(node.data.id)}>Share</button>
+            <div className="flex items-center gap-3 mt-2 text-xs text-secondary font-medium opacity-80 group-hover:opacity-100 transition-opacity">
+              <div className="flex items-center gap-1 bg-surface/60 border border-border/60 rounded-full px-2 py-0.5">
+                <button
+                  className={`p-1 rounded hover:text-accent ${vote === "up" ? "text-accent" : ""}`}
+                  onClick={() => handlers?.onVote(node.data.id, "up")}
+                  aria-label="Upvote comment"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                </button>
+                <span className={`min-w-[2ch] text-center ${vote ? "text-accent" : ""}`}>{score}</span>
+                <button
+                  className={`p-1 rounded hover:text-indigo-400 ${vote === "down" ? "text-indigo-400" : ""}`}
+                  onClick={() => handlers?.onVote(node.data.id, "down")}
+                  aria-label="Downvote comment"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+              </div>
+
+              <button className="hover:text-neon" onClick={() => handlers?.onReply(node.data.id)}>Reply</button>
+              <button className="hover:text-neon" onClick={() => handlers?.onShare(node.data.id)}>Share</button>
             </div>
           </div>
           {childReplies.length > 0 && renderComments(childReplies, depth + 1, handlers)}
@@ -71,6 +102,7 @@ const PostView = () => {
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [score, setScore] = useState<number | null>(null);
   const [vote, setVote] = useState<"up" | "down" | null>(null);
+  const [commentVotes, setCommentVotes] = useState<Record<string, { score: number; vote: CommentVote }>>({});
 
   useEffect(() => {
     const load = async () => {
@@ -88,6 +120,13 @@ const PostView = () => {
         }
         const commentNodes = json?.[1]?.data?.children ?? [];
         setComments(commentNodes);
+        const initialVotes: Record<string, { score: number; vote: CommentVote }> = {};
+        commentNodes.forEach((c) => {
+          if (c?.data?.id) {
+            initialVotes[c.data.id] = { score: c.data.score, vote: null };
+          }
+        });
+        setCommentVotes(initialVotes);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unexpected error");
       } finally {
@@ -141,6 +180,19 @@ const PostView = () => {
     setActionMessage(`Reply coming soon (comment ${commentId})`);
   };
 
+  const handleCommentVote = (commentId: string, direction: CommentVote) => {
+    if (!ensureAuth()) return;
+    setCommentVotes((prev) => {
+      const current = prev[commentId] ?? { score: comments.find((c) => c.data.id === commentId)?.data.score ?? 0, vote: null };
+      if (current.vote === direction) return prev;
+      const delta = (direction === "up" ? 1 : -1) + (current.vote === "up" ? -1 : current.vote === "down" ? 1 : 0);
+      return {
+        ...prev,
+        [commentId]: { score: current.score + delta, vote: direction },
+      };
+    });
+  };
+
   const handleCommentShare = async (commentId: string) => {
     const url = `${window.location.origin}/post/${post?.id ?? ""}#comment-${commentId}`;
     if (navigator.share) {
@@ -158,7 +210,7 @@ const PostView = () => {
     <div className="max-w-3xl mx-auto w-full">
       <div className="card mb-4 p-4">
         <div className="flex items-center gap-2 text-xs text-secondary mb-2">
-          <span className="font-bold text-neon">r/subreddit</span>
+          <span className="font-bold text-neon">r/{post?.subreddit || "subreddit"}</span>
           <span>•</span>
           <span>Posted by u/{post?.author}</span>
         </div>
@@ -236,7 +288,7 @@ const PostView = () => {
         {comments.length === 0 ? (
           <p className="text-sm text-secondary">No comments yet.</p>
         ) : (
-          <div className="space-y-4">{renderComments(comments, 0, { onReply: handleCommentReply, onShare: handleCommentShare })}</div>
+          <div className="space-y-4">{renderComments(comments, 0, { onReply: handleCommentReply, onShare: handleCommentShare, onVote: handleCommentVote, votes: commentVotes })}</div>
         )}
       </div>
 

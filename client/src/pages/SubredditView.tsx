@@ -15,6 +15,7 @@ export interface Post {
   title: string;
   author: string;
   score: number;
+  subreddit?: string;
   thumbnail?: string;
   permalink?: string;
 }
@@ -39,6 +40,7 @@ const SubredditView = () => {
           title: c.data.title,
           author: c.data.author,
           score: c.data.score,
+          subreddit: c.data.subreddit,
           thumbnail: c.data.thumbnail,
           permalink: c.data.permalink,
         }));
