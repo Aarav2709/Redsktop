@@ -54,10 +54,10 @@ const renderComments = (
         <div
           key={node.data.id}
           id={`comment-${node.data.id}`}
-          className={`mt-3 ${depth > 0 ? "ml-3 sm:ml-5 pl-3 border-l-2 border-border hover:border-secondary/50 transition-colors" : ""}`}
+          className={`mt-3 ${depth > 0 ? "ml-3 sm:ml-5 pl-3 border-l-2 border-border/70 hover:border-accent/50 transition-colors" : ""}`}
         >
-          <div className="py-2 px-2 rounded hover:bg-surface/40 transition-colors group">
-            <div className="flex items-center gap-2 text-xs text-secondary mb-1">
+          <div className="py-3 px-3 rounded-xl bg-surface/50 hover:bg-surface/70 transition-colors group border border-border/70 shadow-inner shadow-black/20">
+            <div className="flex items-center gap-2 text-xs text-secondary mb-1 flex-wrap">
               <span className="font-bold text-neon">{node.data.author || "anon"}</span>
               <span>•</span>
               <span>{score} points</span>
@@ -101,7 +101,7 @@ const PostView = () => {
   const [comments, setComments] = useState<ListingChild<CommentData>[]>([]);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [score, setScore] = useState<number | null>(null);
-  const [vote, setVote] = useState<"up" | "down" | null>(null);
+  const [vote, setVote] = useState<CommentVote>(null);
   const [commentVotes, setCommentVotes] = useState<Record<string, { score: number; vote: CommentVote }>>({});
 
   useEffect(() => {
@@ -204,65 +204,65 @@ const PostView = () => {
   };
 
   if (loading) return <LoadingSpinner label="Loading post" />;
-  if (error) return <div className="text-red-400">{error}</div>;
+  if (error) return <div className="glass p-4 text-danger border border-danger/30 bg-danger/10">{error}</div>;
 
   return (
-    <div className="max-w-3xl mx-auto w-full">
-      <div className="card mb-4 p-4">
-        <div className="flex items-center gap-2 text-xs text-secondary mb-2">
-          <span className="font-bold text-neon">r/{post?.subreddit || "subreddit"}</span>
-          <span>•</span>
-          <span>Posted by u/{post?.author}</span>
+    <div className="max-w-5xl mx-auto w-full space-y-5">
+      <div className="glass p-5 sm:p-6">
+        <div className="flex items-start sm:items-center gap-3 text-xs text-secondary mb-2 flex-wrap">
+          <span className="pill bg-accent/10 border-accent/30 text-accent">r/{post?.subreddit || "subreddit"}</span>
+          <span className="pill bg-surface/70">u/{post?.author}</span>
+          <span className="pill bg-surface/70">Score {score ?? post?.score ?? 0}</span>
         </div>
 
-        <h1 className="text-xl sm:text-2xl font-medium mb-3 leading-snug text-neon">{post?.title}</h1>
+        <h1 className="text-2xl sm:text-3xl font-semibold mb-3 leading-snug text-neon">{post?.title}</h1>
 
         {post?.selftext && (
-          <div className="text-sm sm:text-base leading-relaxed text-neon whitespace-pre-wrap mb-4">
+          <div className="text-sm sm:text-base leading-relaxed text-neon whitespace-pre-wrap mb-4 bg-surface/40 border border-border/70 rounded-xl p-4">
             {post.selftext}
           </div>
         )}
 
         {post?.thumbnail && post.thumbnail.startsWith("http") && (
-            <div className="mb-4 flex justify-center bg-black/20 rounded overflow-hidden">
-              <img src={post.thumbnail} alt="content" className="max-h-[600px] object-contain" />
-            </div>
+          <div className="mb-4 flex justify-center bg-black/20 rounded-2xl overflow-hidden border border-border/70">
+            <img src={post.thumbnail} alt="content" className="max-h-[600px] object-contain" />
+          </div>
         )}
 
         {post?.url && !post.url.includes(post.permalink || "reddit") && (
-            <a href={post.url} target="_blank" rel="noreferrer" className="text-accent text-sm hover:underline block mb-4 break-all">
-              {post.url}
-            </a>
+          <a href={post.url} target="_blank" rel="noreferrer" className="text-accent text-sm hover:underline block mb-4 break-all">
+            {post.url}
+          </a>
         )}
 
-        <div className="flex items-center gap-4 text-xs font-medium text-secondary border-t border-border pt-3">
-          <div className="flex items-center gap-1 bg-base/50 rounded px-2 py-1 border border-border/50">
-             <button
-               className={`hover:text-accent p-1 transition-colors ${vote === "up" ? "text-accent" : ""}`}
-               onClick={() => handleVote("up")}
-             >
-               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="18 15 12 9 6 15"></polyline>
-                </svg>
-             </button>
-             <span className={`min-w-[2ch] text-center ${vote ? "text-accent" : ""}`}>{score ?? 0}</span>
-             <button
-               className={`hover:text-blue-500 p-1 transition-colors ${vote === "down" ? "text-blue-500" : ""}`}
-               onClick={() => handleVote("down")}
-             >
-               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-             </button>
+        <div className="flex items-center gap-3 text-xs font-medium text-secondary border-t border-border pt-3 flex-wrap">
+          <div className="flex items-center gap-1 bg-base/60 rounded-full px-3 py-1 border border-border/60 shadow-inner shadow-black/30">
+            <button
+              className={`hover:text-accent p-1 transition-colors ${vote === "up" ? "text-accent" : ""}`}
+              onClick={() => handleVote("up")}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+            </button>
+            <span className={`min-w-[2ch] text-center ${vote ? "text-accent" : ""}`}>{score ?? 0}</span>
+            <button
+              className={`hover:text-blue-500 p-1 transition-colors ${vote === "down" ? "text-blue-500" : ""}`}
+              onClick={() => handleVote("down")}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
           </div>
 
-          <button className="flex items-center gap-1.5 hover:bg-base/50 px-2 py-1 rounded transition-colors hover:text-neon" onClick={() => setActionMessage("Scroll to comments") }>
+          <button className="flex items-center gap-1.5 hover:bg-base/50 px-3 py-1 rounded-full transition-colors hover:text-neon border border-transparent hover:border-border/70" onClick={() => setActionMessage("Scroll to comments")}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
             <span>{comments.length} Comments</span>
           </button>
-          <button className="flex items-center gap-1.5 hover:bg-base/50 px-2 py-1 rounded transition-colors hover:text-neon" onClick={handleShare}>
+          <button className="flex items-center gap-1.5 hover:bg-base/50 px-3 py-1 rounded-full transition-colors hover:text-neon border border-transparent hover:border-border/70" onClick={handleShare}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="18" cy="5" r="3"></circle>
               <circle cx="6" cy="12" r="3"></circle>
@@ -272,18 +272,22 @@ const PostView = () => {
             </svg>
             <span>Share</span>
           </button>
-          <button className="flex items-center gap-1.5 hover:bg-base/50 px-2 py-1 rounded transition-colors hover:text-neon" onClick={handleSave}>
+          <button className="flex items-center gap-1.5 hover:bg-base/50 px-3 py-1 rounded-full transition-colors hover:text-neon border border-transparent hover:border-border/70" onClick={handleSave}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
             </svg>
             <span>Save</span>
           </button>
         </div>
       </div>
 
-      <div className="card p-4">
-        <div className="flex items-center justify-between mb-4 border-b border-border pb-2">
-          <h2 className="text-lg font-medium">Comments</h2>
+      <div className="glass p-4 sm:p-5">
+        <div className="flex items-center justify-between mb-4 border-b border-border/70 pb-2">
+          <div>
+            <p className="pill bg-surface/70 text-secondary">Comments</p>
+            <h2 className="text-lg font-semibold mt-1">What the community says</h2>
+          </div>
+          <span className="text-secondary text-xs">{comments.length} threads</span>
         </div>
         {comments.length === 0 ? (
           <p className="text-sm text-secondary">No comments yet.</p>

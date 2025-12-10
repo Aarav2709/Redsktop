@@ -58,14 +58,15 @@ const PostCard = ({ post, onOpen }: Props) => {
 
   return (
     <article
-      className="card hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5 transition-all duration-300 cursor-pointer p-4 group bg-panel"
+      className="card relative cursor-pointer p-4 group bg-gradient-to-br from-panel/90 via-panel/80 to-surface/70 border border-border/80 hover:border-accent/50 hover:shadow-2xl hover:shadow-accent/10 transition-all duration-300"
       onClick={onOpen}
       role="button"
       tabIndex={0}
     >
-      <div className="flex gap-4">
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-accent/5 via-transparent to-transparent pointer-events-none" aria-hidden />
+      <div className="flex gap-4 relative">
         {/* Vote Column (Desktop) */}
-        <div className="hidden sm:flex flex-col items-center gap-1 pt-1">
+        <div className="hidden sm:flex flex-col items-center gap-1 pt-1 bg-surface/60 rounded-xl px-2 py-2 border border-border/70 shadow-inner shadow-black/30">
            <button
               className={`p-1 rounded hover:bg-surface hover:text-accent transition-colors ${vote === "up" ? "text-accent" : "text-secondary"}`}
               onClick={(e) => handleVote("up", e)}
@@ -88,26 +89,25 @@ const PostCard = ({ post, onOpen }: Props) => {
             <img
               src={post.thumbnail}
               alt="thumb"
-              className="w-24 h-24 object-cover rounded-md bg-surface border border-border group-hover:border-accent/30 transition-colors"
+              className="w-24 h-24 object-cover rounded-xl bg-surface border border-border group-hover:border-accent/40 transition-colors shadow-md shadow-black/30"
             />
           </div>
         )}
 
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 text-xs text-secondary mb-2">
-            <span className="font-bold text-neon hover:underline decoration-accent/50 underline-offset-2">r/{post.subreddit || "subreddit"}</span>
-            <span>•</span>
-            <span className="hover:text-secondary/80">u/{post.author}</span>
-            {status && <span className="text-accent font-medium animate-pulse">• {status}</span>}
+        <div className="flex-1 min-w-0 space-y-2">
+          <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-wide text-secondary">
+            <span className="pill bg-accent/10 border-accent/30 text-accent">r/{post.subreddit || "subreddit"}</span>
+            <span className="pill bg-surface/60 border-border/70 text-secondary">u/{post.author}</span>
+            {status && <span className="pill bg-surface/70 border-accent/40 text-accent">{status}</span>}
           </div>
 
-          <h3 className="text-lg font-semibold text-neon leading-snug mb-3 group-hover:text-white transition-colors">
+          <h3 className="text-lg font-semibold text-neon leading-snug group-hover:text-white transition-colors line-clamp-3">
             {post.title}
           </h3>
 
-          <div className="flex items-center gap-4 text-xs font-medium text-secondary">
+          <div className="flex items-center gap-3 text-xs font-medium text-secondary flex-wrap">
             {/* Mobile Vote (Horizontal) */}
-            <div className="flex sm:hidden items-center gap-1 bg-surface rounded-full px-2 py-1 border border-border">
+            <div className="flex sm:hidden items-center gap-1 bg-surface/70 rounded-full px-2 py-1 border border-border/70 shadow-inner shadow-black/20">
               <button
                 className={`hover:text-accent p-0.5 ${vote === "up" ? "text-accent" : ""}`}
                 onClick={(e) => handleVote("up", e)}
@@ -126,7 +126,7 @@ const PostCard = ({ post, onOpen }: Props) => {
             </div>
 
             <button
-              className="flex items-center gap-1.5 hover:bg-surface px-2 py-1 rounded transition-colors hover:text-neon"
+              className="flex items-center gap-1.5 hover:bg-surface/60 px-2 py-1 rounded-full transition-colors hover:text-neon border border-transparent hover:border-border/70"
               onClick={(e) => { e.stopPropagation(); onOpen(); }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -136,7 +136,7 @@ const PostCard = ({ post, onOpen }: Props) => {
             </button>
 
             <button
-              className="flex items-center gap-1.5 hover:bg-surface px-2 py-1 rounded transition-colors hidden sm:flex hover:text-neon"
+              className="flex items-center gap-1.5 hover:bg-surface/60 px-2 py-1 rounded-full transition-colors hidden sm:flex hover:text-neon border border-transparent hover:border-border/70"
               onClick={handleShare}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -150,7 +150,7 @@ const PostCard = ({ post, onOpen }: Props) => {
             </button>
 
             <button
-              className="flex items-center gap-1.5 hover:bg-surface px-2 py-1 rounded transition-colors hidden sm:flex hover:text-neon"
+              className="flex items-center gap-1.5 hover:bg-surface/60 px-2 py-1 rounded-full transition-colors hidden sm:flex hover:text-neon border border-transparent hover:border-border/70"
               onClick={handleSave}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

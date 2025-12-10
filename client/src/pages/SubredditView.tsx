@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PostCard from "../components/PostCard";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -27,43 +27,40 @@ const SubredditView = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await fetch(apiUrl(`/api/r/${subreddit}`));
-        if (!res.ok) throw new Error("Failed to load feed");
-        const data = (await res.json()) as Listing;
-        const mapped = data.data.children.map((c) => ({
-          id: c.data.id,
-          title: c.data.title,
-          author: c.data.author,
-          score: c.data.score,
-          subreddit: c.data.subreddit,
-          thumbnail: c.data.thumbnail,
-          permalink: c.data.permalink,
-        }));
-        setPosts(mapped);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Unexpected error");
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(apiUrl(`/api/r/${subreddit}`));
+      if (!res.ok) throw new Error("Failed to load feed");
+      const data = (await res.json()) as Listing;
+      const mapped = data.data.children.map((c) => ({
+        id: c.data.id,
+        title: c.data.title,
+        author: c.data.author,
+        score: c.data.score,
+        subreddit: c.data.subreddit,
+        thumbnail: c.data.thumbnail,
+        permalink: c.data.permalink,
+      }));
+      setPosts(mapped);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unexpected error");
+    } finally {
+      setLoading(false);
+    }
   }, [subreddit]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   if (loading) return <LoadingSpinner label={`Loading r/${subreddit}`} />;
 
   return (
-    <div className="max-w-3xl mx-auto w-full">
-      <div className="mb-4 px-2">
-        <h1 className="text-xl font-bold text-neon">r/{subreddit}</h1>
-      </div>
-
+    <div className="max-w-5xl mx-auto w-full space-y-4">
       {error && (
-        <div className="mx-2 rounded border border-red-500/30 bg-red-500/10 text-red-400 px-4 py-3 text-sm">
+        <div className="rounded border border-red-500/30 bg-red-500/10 text-red-400 px-4 py-3 text-sm">
           {error}
         </div>
       )}

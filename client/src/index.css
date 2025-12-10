@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,7 +10,22 @@
 
 body {
   @apply bg-base text-neon antialiased selection:bg-accent/30 selection:text-accent;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
+  background: radial-gradient(circle at 20% 20%, rgba(255, 69, 0, 0.05), transparent 30%),
+              radial-gradient(circle at 80% 0%, rgba(255, 87, 34, 0.07), transparent 25%),
+              linear-gradient(145deg, #0a0a0a 0%, #0f0f0f 50%, #0b0b0b 100%);
+  min-height: 100vh;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255, 69, 0, 0.08), transparent 35%, rgba(255, 87, 34, 0.06)),
+              radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.04), transparent 30%);
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(circle at 50% 50%, black 0%, transparent 70%);
 }
 
 /* Minimalist Scrollbar */
@@ -39,10 +56,44 @@ body {
 }
 
 .card {
-  @apply bg-panel border border-border rounded-lg overflow-hidden transition-all duration-200;
+  @apply bg-panel/90 border border-border/80 rounded-xl overflow-hidden transition-all duration-300 backdrop-blur-xl shadow-xl shadow-black/30;
 }
 
 .input {
-  @apply bg-surface border border-border rounded-md px-3 py-2 text-neon placeholder-secondary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all;
+  @apply bg-surface/60 border border-border rounded-md px-3 py-2 text-neon placeholder-secondary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all;
+}
+
+.glass {
+  @apply bg-panel/70 border border-border/60 backdrop-blur-xl shadow-2xl shadow-black/40 rounded-2xl;
+}
+
+.pill {
+  @apply inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-surface/70 border border-border/70 text-secondary;
+}
+
+.grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.accent-ring {
+  position: absolute;
+  width: 540px;
+  height: 540px;
+  border-radius: 50%;
+  filter: blur(120px);
+  background: radial-gradient(circle, rgba(255, 69, 0, 0.18), transparent 60%);
+  opacity: 0.8;
+}
+
+.floating-dots {
+  background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 18px 18px;
 }
 
