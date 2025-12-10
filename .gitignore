@@ -1,0 +1,34 @@
+# Node dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+electron/node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Runtime files
+.DS_Store
+.env
+.env.*.local
+
+# Build output
+/dist/
+client/dist/
+electron/build/
+server/dist/
+
+# Built apps
+electron/
+
+# VS Code settings
+.vscode/
+
+# Misc
+coverage/
+*.tgz
+```
