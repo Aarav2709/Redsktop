@@ -4,6 +4,9 @@ on:
   release:
     types: [created]
 
+permissions:
+  contents: write
+
 jobs:
   build-release:
     name: Build Desktop (${{ matrix.os }})
@@ -44,7 +47,10 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            electron/release/**/*.{AppImage,exe,dmg,zip}
+            electron/release/**/*.AppImage
+            electron/release/**/*.exe
+            electron/release/**/*.dmg
+            electron/release/**/*.zip
           fail_on_unmatched_files: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
