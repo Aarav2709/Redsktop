@@ -26,23 +26,19 @@ jobs:
             electron/package-lock.json
 
       - name: Install client dependencies
-        working-directory: client
-        run: npm ci
+        run: npm ci --prefix client
 
       - name: Build client
-        working-directory: client
-        run: npm run build
+        run: npm run build --prefix client
 
       - name: Install electron dependencies
-        working-directory: electron
-        run: npm ci
+        run: npm ci --prefix electron
 
       - name: Build electron app
-        working-directory: electron
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
           USE_HARD_LINKS: "false"
-        run: npm run build
+        run: npm run build --prefix electron
 
       - name: Upload release artifacts
         uses: softprops/action-gh-release@v1

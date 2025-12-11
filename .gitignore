@@ -3,6 +3,8 @@ node_modules/
 client/node_modules/
 server/node_modules/
 electron/node_modules/
+electron/dist/
+electron/release/
 
 # Logs
 logs/
@@ -21,9 +23,6 @@ pnpm-debug.log*
 client/dist/
 electron/build/
 server/dist/
-
-# Built apps
-electron/
 
 # VS Code settings
 .vscode/

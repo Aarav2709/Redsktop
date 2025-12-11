@@ -1,0 +1,59 @@
+{
+  "name": "redsktop-shell",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shell wrapper for the Redsktop client (not affiliated with Reddit).",
+  "homepage": "https://github.com/Aarav2709/Redsktop",
+  "author": {
+    "name": "Aarav Gupta",
+    "email": "tribejustice35@gmail.com"
+  },
+  "main": "dist/main.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "tsc -p . --watch & electron .",
+    "build": "tsc -p . && electron-builder",
+    "start": "electron ."
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "^26.6.0",
+    "@types/node": "^20.11.30",
+    "electron-builder": "^24.13.3",
+    "typescript": "^5.4.3"
+  },
+  "build": {
+    "appId": "com.redsktop.app",
+    "productName": "Redsktop",
+    "icon": "../client/public/redsktop.png",
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "extraResources": [
+      {
+        "from": "../client/dist",
+        "to": "client/dist"
+      },
+      {
+        "from": "../client/public/redsktop.png",
+        "to": "icons/redsktop.png"
+      }
+    ],
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "maintainer": "maintainers@example.com"
+    },
+    "mac": {
+      "category": "public.app-category.productivity"
+    },
+    "win": {
+      "target": "nsis"
+    }
+  }
+}
