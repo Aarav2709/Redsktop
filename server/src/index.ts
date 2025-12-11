@@ -3,8 +3,6 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import proxyRouter from "./routes/proxy.js";
-import authRouter from "./routes/auth.js";
-import actionsRouter from "./routes/actions.js";
 import { apiRateLimit } from "./middleware/rateLimit.js";
 import { config } from "./config.js";
 
@@ -20,10 +18,6 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
-app.use("/api/auth", authRouter);
-// Allow direct /auth/* for OAuth redirect compatibility (e.g., Reddit callback)
-app.use("/auth", authRouter);
-app.use("/api/actions", actionsRouter);
 app.use("/api", proxyRouter);
 
 app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {

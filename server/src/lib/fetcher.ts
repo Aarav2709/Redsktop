@@ -16,7 +16,6 @@ export const fetchWithRetry = async <T>({ url, maxRetries = 3 }: FetcherOptions)
       const headers: Record<string, string> = {
         "User-Agent": config.upstreamUserAgent,
         Accept: "application/json",
-        ...(config.oauthToken ? { Authorization: `Bearer ${config.oauthToken}` } : {}),
       };
 
       const res = await fetch(url, {

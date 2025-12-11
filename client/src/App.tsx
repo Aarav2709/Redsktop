@@ -5,10 +5,9 @@ import PostView from "./pages/PostView";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import AuthModal from "./components/AuthModal";
-import { AuthProvider } from "./auth/AuthContext";
 
 const App = () => {
-  const [subreddit, setSubreddit] = useState("technology");
+  const [subreddit, setSubreddit] = useState("all");
   const navigate = useNavigate();
 
   const onSubredditChange = (name: string) => {
@@ -17,30 +16,24 @@ const App = () => {
   };
 
   return (
-    <AuthProvider>
-      <div className="relative min-h-screen overflow-hidden text-white">
-        <div className="accent-ring -left-40 top-0 absolute" aria-hidden />
-        <div className="accent-ring right-10 bottom-0 absolute" aria-hidden />
-        <div className="grid-overlay" aria-hidden />
+    <div className="min-h-screen bg-base text-white">
+      <div className="min-h-screen flex flex-col">
+        <Header subreddit={subreddit} onChange={onSubredditChange} />
 
-        <div className="relative min-h-screen flex flex-col">
-          <Header subreddit={subreddit} onChange={onSubredditChange} />
+        <main className="flex-1 px-4 md:px-8 py-8">
+          <div className="max-w-6xl mx-auto w-full space-y-6">
+            <Routes>
+              <Route path="/r/:subreddit" element={<SubredditView />} />
+              <Route path="/post/:id" element={<PostView />} />
+              <Route path="*" element={<SubredditView />} />
+            </Routes>
+          </div>
+        </main>
 
-          <main className="flex-1 px-4 md:px-8 py-8">
-            <div className="max-w-6xl mx-auto w-full space-y-6">
-              <Routes>
-                <Route path="/r/:subreddit" element={<SubredditView />} />
-                <Route path="/post/:id" element={<PostView />} />
-                <Route path="*" element={<SubredditView />} />
-              </Routes>
-            </div>
-          </main>
-
-          <Footer />
-          <AuthModal />
-        </div>
+        <Footer />
+        <AuthModal />
       </div>
-    </AuthProvider>
+    </div>
   );
 };
 

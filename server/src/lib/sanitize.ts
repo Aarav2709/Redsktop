@@ -1,10 +1,8 @@
 const stripHtml = (text: string): string =>
   text.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
 
-const removeExternalLinks = (text: string): string =>
-  text.replace(/https?:\/\/[^\s]+/gi, "[link removed]");
-
-const sanitizeText = (value: string): string => removeExternalLinks(stripHtml(value));
+// Keep links intact; we only strip HTML for safety.
+const sanitizeText = (value: string): string => stripHtml(value);
 
 export type Json = Record<string, unknown> | Array<unknown> | string | number | boolean | null;
 

@@ -2,6 +2,10 @@
 
 Redsktop is an independent desktop client that proxies Reddit JSON endpoints, sanitizes each response, caches data in-memory, and ships a React + Vite UI wrapped in Electron. The project is unaffiliated with Reddit and focuses on delivering a lightweight, opinionated reader with built-in rate limiting.
 
+<p align="center">
+   <img src="./image.png" alt="Redsktop preview" width="900" />
+</p>
+
 <img src="image.png" align="center">
 
 ## Requirements

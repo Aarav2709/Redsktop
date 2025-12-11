@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,22 +8,9 @@
 
 body {
   @apply bg-base text-neon antialiased selection:bg-accent/30 selection:text-accent;
-  font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
-  background: radial-gradient(circle at 20% 20%, rgba(255, 69, 0, 0.05), transparent 30%),
-              radial-gradient(circle at 80% 0%, rgba(255, 87, 34, 0.07), transparent 25%),
-              linear-gradient(145deg, #0a0a0a 0%, #0f0f0f 50%, #0b0b0b 100%);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: linear-gradient(180deg, #0e0e0f 0%, #0b0b0c 45%, #0a0a0a 100%);
   min-height: 100vh;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(90deg, rgba(255, 69, 0, 0.08), transparent 35%, rgba(255, 87, 34, 0.06)),
-              radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.04), transparent 30%);
-  pointer-events: none;
-  z-index: 0;
-  mask-image: radial-gradient(circle at 50% 50%, black 0%, transparent 70%);
 }
 
 /* Minimalist Scrollbar */

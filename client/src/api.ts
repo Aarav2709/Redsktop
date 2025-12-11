@@ -1,13 +1,14 @@
-const resolveBase = () => {
-  if (typeof window !== "undefined" && window.location.protocol === "file:") {
-    return "http://localhost:4000";
-  }
-  return import.meta.env.VITE_API_BASE || "";
+const upstream = "https://www.reddit.com";
+
+const resolveProxyBase = () => {
+  const configured = import.meta.env.VITE_API_BASE || "";
+  if (configured) return configured;
+  // When packaged (file://), fall back to direct Reddit JSON so the app works without a local server.
+  return "";
 };
 
-const API_BASE = resolveBase();
-
-export const apiUrl = (path: string) => `${API_BASE}${path}`;
+const PROXY_BASE = resolveProxyBase();
+const USE_PROXY = Boolean(PROXY_BASE);
 
 const readError = async (res: Response) => {
   try {
@@ -19,17 +20,14 @@ const readError = async (res: Response) => {
   return `Request failed with ${res.status}`;
 };
 
-export const apiFetch = async <T>(path: string, options: RequestInit = {}, token?: string): Promise<T> => {
+export const apiFetch = async <T>(url: string, options: RequestInit = {}): Promise<T> => {
+  const needsJsonHeader = Boolean(options.body);
   const headers: Record<string, string> = {
-    "content-type": "application/json",
+    ...(needsJsonHeader ? { "content-type": "application/json" } : {}),
     ...(options.headers as Record<string, string> | undefined),
   };
-  if (token) headers.authorization = `Bearer ${token}`;
 
-  const res = await fetch(apiUrl(path), {
-    ...options,
-    headers,
-  });
+  const res = await fetch(url, { ...options, headers });
 
   if (!res.ok) {
     const message = await readError(res);
@@ -38,19 +36,25 @@ export const apiFetch = async <T>(path: string, options: RequestInit = {}, token
   return (await res.json()) as T;
 };
 
-export const loginRequest = (username: string, password: string) =>
-  apiFetch<{ token: string; user: { username: string } }>("/api/auth/login", {
-    method: "POST",
-    body: JSON.stringify({ username, password }),
-  });
+export const fetchSubredditListing = (subreddit: string, after = "") => {
+  const qp = after ? `?after=${encodeURIComponent(after)}` : "";
+  const url = USE_PROXY
+    ? `${PROXY_BASE}/api/r/${encodeURIComponent(subreddit)}${qp}`
+    : `${upstream}/r/${encodeURIComponent(subreddit)}.json${qp}`;
+  return apiFetch<{ data: { children: Array<{ data: any }>; after?: string } }>(url);
+};
 
-export const fetchCurrentUser = (token: string) =>
-  apiFetch<{ user: { username: string; displayName?: string; avatar?: string } }>("/api/auth/me", {}, token).then((r) => r.user);
+export const fetchSortedFrontpage = (sort: string, after = "") => {
+  const qp = after ? `?after=${encodeURIComponent(after)}` : "";
+  const url = USE_PROXY
+    ? `${PROXY_BASE}/api/sort/${encodeURIComponent(sort)}${qp}`
+    : `${upstream}/${encodeURIComponent(sort)}.json${qp}`;
+  return apiFetch<{ data: { children: Array<{ data: any }>; after?: string } }>(url);
+};
 
-export const postAction = (action: "vote" | "save", payload: Record<string, unknown>, token: string) =>
-  apiFetch<{ status: string }>(`/api/actions/${action}`, { method: "POST", body: JSON.stringify(payload) }, token);
-
-export const redditAuthStart = () => apiFetch<{ url: string; state: string }>("/api/auth/reddit/login");
-
-export const redditAuthPoll = (state: string) =>
-  apiFetch<{ status: "pending" | "complete"; token?: string; user?: { username: string; displayName?: string; avatar?: string } }>(`/api/auth/reddit/poll/${state}`);
+export const fetchPostWithComments = (id: string) => {
+  const url = USE_PROXY
+    ? `${PROXY_BASE}/api/post/${id}`
+    : `${upstream}/comments/${encodeURIComponent(id)}.json`;
+  return apiFetch<[{ data: { children: Array<{ data: any }> } }, { data: { children: Array<{ data: any }> } }]>(url);
+};

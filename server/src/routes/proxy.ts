@@ -33,8 +33,24 @@ const respond = async (
 
 router.get("/r/:subreddit", async (req: Request, res: Response) => {
   const { subreddit } = req.params;
-  const key = `subreddit:${subreddit}`;
-  const url = `${config.upstreamBase}/r/${encodeURIComponent(subreddit)}.json`;
+  const after = typeof req.query.after === "string" ? req.query.after : "";
+  const key = `subreddit:${subreddit}:${after || "root"}`;
+  const qp = after ? `?after=${encodeURIComponent(after)}` : "";
+  const url = `${config.upstreamBase}/r/${encodeURIComponent(subreddit)}.json${qp}`;
+  await respond(res, key, config.cacheTtlPosts, () => fetchWithRetry({ url }));
+});
+
+router.get("/sort/:sort", async (req: Request, res: Response) => {
+  const sort = (req.params.sort || "hot").toLowerCase();
+  const allowed = new Set(["hot", "new", "rising", "top", "best"]);
+  if (!allowed.has(sort)) {
+    res.status(400).json({ error: "Unsupported sort" });
+    return;
+  }
+  const after = typeof req.query.after === "string" ? req.query.after : "";
+  const key = `sort:${sort}:${after || "root"}`;
+  const qp = after ? `?after=${encodeURIComponent(after)}` : "";
+  const url = `${config.upstreamBase}/${encodeURIComponent(sort)}.json${qp}`;
   await respond(res, key, config.cacheTtlPosts, () => fetchWithRetry({ url }));
 });
 
