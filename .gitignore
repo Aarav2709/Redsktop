@@ -5,6 +5,7 @@ server/node_modules/
 electron/node_modules/
 electron/dist/
 electron/release/
+client/public/redsktop-512.png
 
 # Logs
 logs/

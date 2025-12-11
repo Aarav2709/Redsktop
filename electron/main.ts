@@ -6,7 +6,7 @@ let mainWindow: BrowserWindow | null = null;
 
 const iconPath = app.isPackaged
   ? path.join(process.resourcesPath, "icons", "redsktop.png")
-  : path.join(__dirname, "../client/public/redsktop.png");
+  : path.join(__dirname, "../client/public/redsktop-512.png");
 
 const createWindow = () => {
   mainWindow = new BrowserWindow({

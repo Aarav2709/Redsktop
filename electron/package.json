@@ -25,7 +25,7 @@
   "build": {
     "appId": "com.redsktop.app",
     "productName": "Redsktop",
-    "icon": "../client/public/redsktop.png",
+    "icon": "../client/public/redsktop-512.png",
     "files": [
       "dist/**/*",
       "package.json"
@@ -39,7 +39,7 @@
         "to": "client/dist"
       },
       {
-        "from": "../client/public/redsktop.png",
+        "from": "../client/public/redsktop-512.png",
         "to": "icons/redsktop.png"
       }
     ],
