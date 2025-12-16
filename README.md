@@ -6,8 +6,6 @@ Redsktop is an independent desktop client that proxies Reddit JSON endpoints, sa
    <img src="./image.png" alt="Redsktop preview" width="900" />
 </p>
 
-<img src="image.png" align="center">
-
 ## Requirements
 
 - Node.js (v18+) and npm
